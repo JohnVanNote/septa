@@ -6,6 +6,7 @@
 
 import json
 
+from math import hypot
 from SeptaStop import *
 
 DEBUG = True
@@ -23,34 +24,42 @@ def parse_septa_json(json_str):
 def json_array_to_septa(json_array):
     stops = []
     for stop in json_array:
-        #print stop
-        stops.append(stop)
+        stops.append(json_object_to_septa(stop))
     return stops
 
 
 def json_object_to_septa(json_object):
-    lat = json_object[KEY_LAT]
-    lng = json_object[KEY_LNG]
+    lat = float(json_object[KEY_LAT])
+    lng = float(json_object[KEY_LNG])
     stop_id = json_object[KEY_STOP_ID]
     stop_name = json_object[KEY_STOP_NAME]
     return SeptaStop(lat, lng, stop_id, stop_name)
 
 
+def find_distance(x1, x2, y1, y2):
+    return hypot(x2 - x1, y2 - y1)
+
+
 def main():
-    stop = SeptaStop(-75.20797, 40.076831, 250, "Germantown Av & Bethlehem Pk - FS")
-    print stop.stop_name
-    print stop.stop_id
+    lng = -75.0
+    lat = 40.0
 
     if DEBUG:
         with open(TEST_FILE, 'r') as json_data_file:
             data = json_data_file.read()
 
     septa_data = parse_septa_json(data)
-    print septa_data
     stops = json_array_to_septa(septa_data)
-    print stops
+    
+    stop_dict = {}
+    for stop in stops:
+        #print stop
+        #print find_distance(lng, stop.lng, lat, stop.lat)
+        stop_dict[find_distance(lng, stop.lng, lat, stop.lat)] = stop
 
-
+    for distance in sorted(stop_dict.iterkeys()):
+        print distance
+        print stop_dict[distance]
 
 if __name__ == "__main__":
     main()

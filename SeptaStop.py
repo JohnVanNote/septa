@@ -5,43 +5,48 @@
 #
 
 class SeptaStop:
+    def __init__ (self, lng, lat, stop_id, stop_name):
+        self.lng = lng
+        self.lat = lat
+        self.stop_id = stop_id
+        self.stop_name = stop_name
 
-  def __init__ (self, lng, lat, stop_id, stop_name):
-    self.lng = lng
-    self.lat = lat
-    self.stop_id = stop_id
-    self.stop_name = stop_name
+    @property
+    def lng(self):
+        return self._lng
 
-  @property
-  def lng(self):
-    return self._lng
+    @lng.setter
+    def lng(self, lng):
+        self._lng = lng
 
-  @lng.setter
-  def lng(self, lng):
-    self._lng = lng
+    @property
+    def lat(self):
+        return self._lat
 
-  @property
-  def lat(self):
-    return self._lat
+    @lat.setter
+    def lat(self, lat):
+        self._lat = lat
 
-  @lat.setter
-  def lat(self, lat):
-    self._lat = lat
 
-  @property
-  def stop_id(self):
-    print "Here"
-    return self._stop_id
+    @property
+    def stop_id(self):
+        return self._stop_id
 
-  @stop_id.setter
-  def stop_id(self, stop_id):
-    print "There"
-    self._stop_id = stop_id
+    @stop_id.setter
+    def stop_id(self, stop_id):
+      self._stop_id = stop_id
 
-  @property
-  def stop_name(self):
-    return  self._stop_name
+    @property
+    def stop_name(self):
+        return  self._stop_name
 
-  @stop_name.setter
-  def stop_name(self, stop_name):
-    self._stop_name = stop_name
+    @stop_name.setter
+    def stop_name(self, stop_name):
+        self._stop_name = stop_name
+
+    def __str__(self):
+        return "Septa Stop: " \
+         + "name=" + self.stop_name \
+         + "; id=" + self.stop_id \
+         + "; latitude=" + str(self.lat) \
+         + "; longitude=" + str(self.lng)
