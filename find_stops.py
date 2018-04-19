@@ -5,6 +5,7 @@
 #
 
 import json
+import sys
 
 from math import hypot
 from SeptaStop import *
@@ -40,9 +41,17 @@ def find_distance(x1, x2, y1, y2):
     return hypot(x2 - x1, y2 - y1)
 
 
-def main():
-    lng = -75.0
-    lat = 40.0
+def main(argv):
+    print sys.argv[1]
+    print sys.argv[2]
+    print sys.argv[3]
+
+    if (len(argv) < 4):
+        raise BaseException("Invalid number of arguments")
+
+    lng = float(argv[1])
+    lat = float(argv[2])
+    num = int(argv[3])
 
     if DEBUG:
         with open(TEST_FILE, 'r') as json_data_file:
@@ -50,16 +59,18 @@ def main():
 
     septa_data = parse_septa_json(data)
     stops = json_array_to_septa(septa_data)
-    
+
     stop_dict = {}
     for stop in stops:
-        #print stop
-        #print find_distance(lng, stop.lng, lat, stop.lat)
-        stop_dict[find_distance(lng, stop.lng, lat, stop.lat)] = stop
+        stop_dict[stop] = find_distance(lng, stop.lng, lat, stop.lat)
 
-    for distance in sorted(stop_dict.iterkeys()):
-        print distance
-        print stop_dict[distance]
+    i = 0
+    for key, value in sorted(stop_dict.iteritems(), key=lambda (k,v): (v,k)):
+        if num <= i:
+            break
+        print key
+        print value
+        i += 1
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
