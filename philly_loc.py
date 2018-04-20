@@ -3,7 +3,7 @@
 # Kurt Schmidt
 # 4/2015
 #
-# EDITOR:  tabstop=2, cols=80
+# EDITOR:  tabstop=4, cols=80
 #
 
 import random
@@ -19,11 +19,8 @@ long_delta = max_long - min_long
 
 multiple = 1000
 
-
 def getLoc() :
-  '''Returns some location in Phila. ( LAT, LONG ), in decimal degrees'''
-
-  x = random.randint(0, int(long_delta*multiple))
-  y = random.randint(0, int(lat_delta*multiple))
-
-  return min_lat + y/float(multiple) , min_long + x/float(multiple)
+    '''Returns some location in Phila. ( LAT, LONG ), in decimal degrees'''
+    x = random.randint(0, int(long_delta*multiple))
+    y = random.randint(0, int(lat_delta*multiple))
+    return min_lat + y/float(multiple) , min_long + x/float(multiple)

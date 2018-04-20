@@ -7,44 +7,76 @@
 import json
 import sys
 
+from HTMLParser import HTMLParser
 from math import hypot
 from SeptaStop import *
 
 DEBUG = True
 TEST_FILE = "test_data.json"
-KEY_LAT = "lat"
-KEY_LNG = "lng"
-KEY_STOP_ID = "stopid"
-KEY_STOP_NAME = "stopname"
 
+def load_json(json_str):
+    '''Loads JSON str into a JSON Object/Array for parsing
 
-def parse_septa_json(json_str):
+    Args:
+        json_str (str): The JSON String
+
+    Returns:
+        list: The JSON string parsed into a list of dictionary's
+    '''
     septa_data = json.loads(json_str)
     return septa_data
 
 def json_array_to_septa(json_array):
+    '''Converts a JSON Array into a list of SeptaStop's
+
+    Args:
+        json_array (list): The JSON list of dictionary's
+
+    Returns:
+        list: The list of SeptaStop's
+    '''
+
     stops = []
     for stop in json_array:
         stops.append(json_object_to_septa(stop))
     return stops
 
-
 def json_object_to_septa(json_object):
-    lat = float(json_object[KEY_LAT])
-    lng = float(json_object[KEY_LNG])
-    stop_id = json_object[KEY_STOP_ID]
-    stop_name = json_object[KEY_STOP_NAME]
+    '''Converts a JSON Object into a SeptaStop
+
+    Args:
+        json_object (dict): The JSON Object dictionary
+
+    Returns:
+        SeptaStop: A converted SeptaStop
+    '''
+
+    lat = float(json_object["lat"])
+    lng = float(json_object["lng"])
+    stop_id = int(json_object["stopid"])
+    stop_name = HTMLParser().unescape(json_object["stopname"])
     return SeptaStop(lat, lng, stop_id, stop_name)
 
-
 def find_distance(x1, x2, y1, y2):
+    '''Finds the distance between two points
+
+    Args:
+        x1 (float): The x-value of the first point
+        x2 (float): The x-value of the second point
+        y1 (float): The y-value of the first point
+        y2 (float): The y-value of the second point
+
+    Returns:
+        float: The distance between (x1,y1) and (x2,y2)
+    '''
     return hypot(x2 - x1, y2 - y1)
 
-
 def main(argv):
-    print sys.argv[1]
-    print sys.argv[2]
-    print sys.argv[3]
+    '''Main function
+
+    Args:
+        argv(str[]): The program arguments
+    '''
 
     if (len(argv) < 4):
         raise BaseException("Invalid number of arguments")
@@ -57,7 +89,7 @@ def main(argv):
         with open(TEST_FILE, 'r') as json_data_file:
             data = json_data_file.read()
 
-    septa_data = parse_septa_json(data)
+    septa_data = load_json(data)
     stops = json_array_to_septa(septa_data)
 
     stop_dict = {}
@@ -68,8 +100,10 @@ def main(argv):
     for key, value in sorted(stop_dict.iteritems(), key=lambda (k,v): (v,k)):
         if num <= i:
             break
-        print key
-        print value
+        print str(value) \
+         + " " + key.stop_name \
+         + " (" + str(key.lat) \
+         + ", " + str(key.lng) + ")"
         i += 1
 
 if __name__ == "__main__":
