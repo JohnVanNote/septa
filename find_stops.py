@@ -4,8 +4,9 @@
 # 04.08.2018
 #
 
+import argparse
 import json
-import sys
+import philly_loc
 import urllib
 
 from HTMLParser import HTMLParser
@@ -13,6 +14,7 @@ from math import hypot
 from SeptaStop import *
 
 DEBUG = False
+N_DEFAULT = 5
 TEST_FILE = "test_data.json"
 URL = "http://www3.septa.org/hackathon/Stops/?req1=23"
 
@@ -87,33 +89,44 @@ def find_distance(x1, x2, y1, y2):
     '''
     return hypot(x2 - x1, y2 - y1)
 
-def main(argv):
+def main():
     '''Main function
 
     Args:
         argv(str[]): The program arguments
     '''
 
-    if (len(argv) < 4):
-        raise BaseException("Invalid number of arguments")
+    # Get command line arguments
+    parser = argparse.ArgumentParser(description=\
+     "Displays the closest Septa Stops.")
+    parser.add_argument("-n", help="number of Septa Stops", type=int)
+    args = parser.parse_args()
+    num = args.n
+    if num == None:
+        num = N_DEFAULT
 
-    lng = float(argv[1])
-    lat = float(argv[2])
-    num = int(argv[3])
+    # Randomly get random locations
+    pos = philly_loc.getLoc()
+    lng = pos[0]
+    lat = pos[1]
 
+    # Get Septa data
     if DEBUG:
         with open(TEST_FILE, 'r') as json_data_file:
-            data = json_data_file.read()
+            raw_data = json_data_file.read()
     else:
-        data = read_doc(URL)
+        raw_data = read_doc(URL)
 
-    septa_data = load_json(data)
+    # Convert data
+    septa_data = load_json(raw_data)
     stops = json_array_to_septa(septa_data)
 
+    # Calculate distance
     stop_dict = {}
     for stop in stops:
         stop_dict[stop] = find_distance(lng, stop.lng, lat, stop.lat)
 
+    # Print to stdout
     i = 0
     for key, value in sorted(stop_dict.iteritems(), key=lambda (k,v): (v,k)):
         if num <= i:
@@ -124,5 +137,7 @@ def main(argv):
          + ", " + str(key.lng) + ")"
         i += 1
 
+    return
+
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
