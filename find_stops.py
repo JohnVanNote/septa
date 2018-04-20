@@ -6,13 +6,29 @@
 
 import json
 import sys
+import urllib
 
 from HTMLParser import HTMLParser
 from math import hypot
 from SeptaStop import *
 
-DEBUG = True
+DEBUG = False
 TEST_FILE = "test_data.json"
+URL = "http://www3.septa.org/hackathon/Stops/?req1=23"
+
+def read_doc(url):
+    '''Reads a webpage document
+
+    Args:
+        url (str): The URL to read_doc
+
+    Returns:
+        str: The webpage text
+    '''
+    sock = urllib.urlopen(url)
+    doc = sock.read()
+    sock.close()
+    return doc
 
 def load_json(json_str):
     '''Loads JSON str into a JSON Object/Array for parsing
@@ -88,6 +104,8 @@ def main(argv):
     if DEBUG:
         with open(TEST_FILE, 'r') as json_data_file:
             data = json_data_file.read()
+    else:
+        data = read_doc(URL)
 
     septa_data = load_json(data)
     stops = json_array_to_septa(septa_data)
